@@ -43,7 +43,7 @@ agent.tool_plain(tools.search_glossary)
 agent.tool_plain(tools.get_lecture_summary)
 
 # TODO(第3回 演習): tools.py に make_quiz を作り、ここで登録しよう
-
+agent.tool_plain(tools.make_quiz)
 # 第5回: 使う MCP サーバーの設定ファイル。Claude Desktop や Cursor と同じ "mcpServers" 形式
 MCP_CONFIG = Path(__file__).resolve().parent / "mcp_servers.json"
 
@@ -59,6 +59,14 @@ def load_mcp_servers(config_path: Path = MCP_CONFIG) -> list[MCPToolset]:
     Pydantic AI には同じことをする load_mcp_toolsets() もある。ここで自分で組み立てているのは、
     古い SDK で作られたサーバー（fetch など）につなぐとき、接続方式の自動判定（"auto"）が
     警告を大量に出すため。"legacy" に固定すると新旧どちらのサーバーにも静かにつながる。
+    """
+    INSTRUCTIONS = """\
+    あなたはAIエンジニアリング講座（AIE2026）の学習支援エージェントです。
+-   用語や講座に固有のことを答える前に、必ず search_glossary で用語集を確認する。
+-   回の内容を聞かれたら get_lecture_summary を使う。
+-   用語集に見つからないことは、推測で断定せず「用語集にはない」と伝える。
+-   回答の最後に、関係する回（第N回）を示す。
+-   宿題の答えそのものは書かず、考え方のヒントで導く。
     """
     config = json.loads(Path(config_path).read_text(encoding="utf-8"))["mcpServers"]
     toolsets = []
